@@ -1,6 +1,9 @@
 import pygame
 from pygame.locals import *
+
 import sys
+import os  
+
 
 filename = sys.argv[1]
 caption = sys.argv[2]
@@ -8,12 +11,6 @@ width = int(sys.argv[3])
 heigth = int(sys.argv[4])
 window_position_x = int(sys.argv[5])
 
-print filename
-print caption
-print width
-print heigth
-
-import os  
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = str(window_position_x) + ",0"
 
@@ -33,8 +30,3 @@ while not gameOver:
         if e.type==KEYDOWN:
             if e.key==K_ESCAPE:
                 gameOver=True
-                
-
-#print the comparison in the shell
-#bla
-#bla
