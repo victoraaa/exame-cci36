@@ -49,12 +49,21 @@ def save_image_with_size(img, size, filename, y_pos=0):
 
 
 def compare_images(img1, img2):
-    print "simple_comparison says that probability of being the same is {}".format(simple_comparison(img1, img2))
-    print "statistical_random_comparison says that probability of being the same is {}".format(statistical_random_comparison(img1, img2))
-    print "region-buckets says that probability of being the same is {}".format(color_histogram_region_comparison(img1, img2))
+    result_1 = "Simple comparison algorithm: {}"
+    result_1 = result_1.format(simple_comparison(img1, img2))
+
+    result_2 = "Statistical Random Comparison: {}"
+    result_2 = result_2.format(statistical_random_comparison(img1, img2))
+
+    result_3 = "Region Buckets: {}"
+    result_3 = result_3.format(color_histogram_region_comparison(img1, img2))
+
+    return (result_1, result_2, result_3)
+    # print "simple_comparison says that probability of being the same is {}".format(simple_comparison(img1, img2))
+    # print "statistical_random_comparison says that probability of being the same is {}".format(statistical_random_comparison(img1, img2))
+    # print "region-buckets says that probability of being the same is {}".format(color_histogram_region_comparison(img1, img2))
 
 
-#Executes the main program
 def create_images(file_name, size):
 
     #First of all, let's ask what image we shall use
@@ -66,22 +75,23 @@ def create_images(file_name, size):
     #Then, get the size:
     print "Qual a largura desejada da janela? O menor valor aceito é 20px, e o maior, 200px"
     small_width = max(20, min(int(size[0]), 200))
-    large_width = int(2.75*small_width)
+    large_width = int(2.75 * small_width)
     print "Qual a altura desejada da janela? O menor valor aceito é 20px, e o maior, 150px"
     small_height = max(20, min(int(size[1]), 150))
-    large_height = int(2.75*small_height)
+    large_height = int(2.75 * small_height)
 
     file_name = file_name.split(os.sep)[-1]
+    file_names = ("small_{}".format(file_name), "large_{}".format(file_name))
     #Scale image to small size, save it
-    small_img, open_small_image = save_image_with_size(img, (small_width, small_height), "small_{}".format(file_name))
+    small_img, open_small_image = save_image_with_size(img, (small_width, small_height), file_names[0])
 
     #Scale image to large size, save it
-    large_image, open_large_image = save_image_with_size(img, (large_width, large_height), "large_{}".format(file_name), small_width + 100)
+    large_image, open_large_image = save_image_with_size(img, (large_width, large_height), file_names[1], small_width + 100)
 
     open_small_image()
     open_large_image()
 
     #Compare both images and print results in command line
-    compare_images(small_img, large_image)
+    results = compare_images(small_img, large_image)
 
-    return ("small_{}".format(file_name), "large_{}".format(file_name))
+    return (file_names, results)

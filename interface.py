@@ -3,7 +3,8 @@
 import logging
 
 from PIL import ImageTk, Image
-from Tkinter import Tk, BOTH, Menu, Label
+import Tkinter
+from Tkinter import Tk, BOTH, Menu, Label, Canvas
 from ttk import Frame, Button, Style
 import tkFileDialog
 import tkSimpleDialog
@@ -19,13 +20,14 @@ class Example(Frame):
         self.parent = parent
         self.initUI()
 
-        self.img_labels = [None] * 2
-        self.img_file_names = [None] * 2
+        self.img_labels = [Label(self), Label(self)]
 
     def initUI(self):
+        self.bg_color = '#333'
+
         # self.parent.title("Comparação de imagens")
         self.style = Style()
-        self.style.configure('TFrame', background='#333')
+        self.style.configure('TFrame', background=self.bg_color)
 
         self.pack(fill=BOTH, expand=1)
 
@@ -40,22 +42,33 @@ class Example(Frame):
         quit_button = Button(self, text='Sair', command=self.quit)
         quit_button.place(x=size[0] - 100, y=size[1] - 50)
 
+        self.canvas = Canvas(self, bg=self.bg_color, bd=10)
+        self.canvas.pack()
+        self.canvas.place(x=0, y=600, height=200, width=650)
+
     def text_dialog_box(self, box_title, msg):
         return tkSimpleDialog.askstring(box_title, msg)
 
-    # def select_image_1(self):
-    #     logging.debug('Selecionando a primeira imagem.')
-    #     self.select_image_file(0)
+    def draw_result(self, results):
+        self.canvas.grid_forget()
+        self.canvas = Canvas(self, bg=self.bg_color, bd=10)
+        self.canvas.pack()
 
-    # def select_image_2(self):
-    #     self.select_image_file(1)
+        self.canvas.place(x=0, y=600, height=200, width=650)
 
-    def load_image(self, file_name, position):
+        font = ('Helvetica', '12')
+        self.canvas.create_text(20, 40, anchor=Tkinter.W, font=font, text='Probability of being the same image according different algorithms:', fill='white')
+        self.canvas.create_text(20, 65, anchor=Tkinter.W, font=font, text=results[0], fill='white')
+        self.canvas.create_text(20, 90, anchor=Tkinter.W, font=font, text=results[1], fill='white')
+        self.canvas.create_text(20, 115, anchor=Tkinter.W, font=font, text=results[2], fill='white')
+
+    def load_image(self, file_name, position, label):
         image = Image.open(file_name)
         image = ImageTk.PhotoImage(image)
-        label = Label(self, image=image)
+        label.__setitem__('image', image)
         label.image = image
         label.place(x=position[0], y=position[1])
+
 
     def select_image_file(self):
         file_types = [('PNG Image', '*.png'), ('Todos arquivos', '*')]
@@ -73,19 +86,22 @@ class Example(Frame):
         if file_name is not None:
             logging.debug('Imagem selecionada: ' + file_name)
 
-            file_name_1, file_name_2 = create_images(file_name, image_size)
+            file_names, results = create_images(file_name, image_size)
 
-            self.load_image(file_name_1, (10, 50))
+            self.load_image(file_names[0], (10, 50), self.img_labels[0])
 
-            x_position = self.parent.size[0] / 2
-            self.load_image(file_name_2, (x_position, 50))
+            x_position = self.parent.size[0] / 2 - 200
+            self.load_image(file_names[1], (x_position, 50), self.img_labels[1])
+
+            print results
+            self.draw_result(results)
         else:
             logging.debug('Nenhum arquivo de imagem foi selecionado')
 
 
 class RootWindow(Tk):
 
-    def __init__(self, size=(800, 600)):
+    def __init__(self, size=(1000, 800)):
         Tk.__init__(self)
 
         self.title("Comparação de Imagens")
