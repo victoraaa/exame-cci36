@@ -79,8 +79,14 @@ class Example(Frame):
 
         msg = 'Qual a largura desejada (em pixels) da imagem?\nO menor valor aceito é 20, e o maior, 200'
         image_width = self.text_dialog_box('Largura da imagem', msg)
+        while not image_width.isdigit() or int(image_width) < 20 or int(image_width) > 200:
+            msg = 'Valor Inválido! Os valores aceitos para largura (em pixels) vão de 20 a 200\nEntre com novo valor:'
+            image_width = self.text_dialog_box('Largura da imagem', msg)
         msg = 'Qual a altura desejada (em pixels) da imagem?\nO menor valor aceito é 20, e o maior, 150'
         image_height = self.text_dialog_box('Altura da imagem', msg)
+        while not image_height.isdigit() or int(image_height) < 20 or int(image_height) > 150:
+            msg = 'Valor Inválido! Os valores aceitos para altura (em pixels) vão de 20 a 150\nEntre com novo valor:'
+            image_height = self.text_dialog_box('Altura da imagem', msg)
         image_size = (int(image_width), int(image_height))
 
         if file_name is not None:
